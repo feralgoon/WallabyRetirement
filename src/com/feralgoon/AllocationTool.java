@@ -20,6 +20,7 @@ public class AllocationTool
         Scanner scan = new Scanner(System.in);
         String choice;
 
+
         do
         {
             Employee employee = setUpEmployee();
