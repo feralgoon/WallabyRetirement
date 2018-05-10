@@ -10,6 +10,10 @@ public class AllocationTool
 
     public void run()
     {
+        Scanner scan = new Scanner(System.in);
+        String choice;
+        boolean add = true;
+
         funds.add(new Fund("End of World 2012"));
         funds.add(new Fund("End of TIme 2038"));
         funds.add(new Fund("Y2K Survivors"));
@@ -17,57 +21,105 @@ public class AllocationTool
 
         printHeader();
 
-        Scanner scan = new Scanner(System.in);
-        String choice;
+        System.out.print("Would you like to enter additional retirement plans? [Y/N]  ");
+        choice = scan.nextLine();
 
+        if (choice.equalsIgnoreCase("y"))
+        {
+            System.out.println();
+            System.out.println("Type 'exit' at any time to quit entering new plans.");
+            do
+            {
+                add = true;
+                System.out.println("Enter the name of the new plan: ");
+                choice = scan.nextLine();
+                if (!choice.equalsIgnoreCase("exit"))
+                {
+                    for(Fund f : funds)
+                    {
+                        if (f.getName().equalsIgnoreCase(choice))
+                        {
+                            System.out.println("Fund already exists.");
+                            add = false;
+                        }
+                    }
+                }
+                else
+                {
+                    add = false;
+                }
+                if (add)
+                {
+                    funds.add(new Fund(choice));
+                }
+
+            }while (!choice.equalsIgnoreCase("exit"));
+        }
 
         do
         {
-            Employee employee = setUpEmployee();
-            System.out.print("Would you like to see a printout of your retirement allocations?  ");
-            choice = scan.nextLine();
-            System.out.println();
-            if (choice.equalsIgnoreCase("Y") || choice.equalsIgnoreCase("Yes"))
-            {
-                System.out.println();
-                employee.printEnrollment();
-                System.out.println();
-            }
+            setUpEmployee();
         } while (true);
 
     }
 
-    private Employee setUpEmployee()
+    private void setUpEmployee()
     {
         Scanner scan = new Scanner(System.in);
         String name;
+        String idNumString;
         int idNum;
         BigDecimal contributionAmount;
-        int choice;
+        String choice;
+        String contributionAmountString;
 
         System.out.println();
         System.out.println("Setting up new Employee Retirement Account.");
+        System.out.println("Enter 'abandon' at anytime to quit.");
         System.out.println();
         System.out.print("Enter Name: ----> ");
         name = scan.nextLine();
+        if (name.equalsIgnoreCase("abandon"))
+        {
+            return;
+        }
         System.out.print("Enter employee ID Number: ---->  ");
-        idNum = scan.nextInt();
-        scan.nextLine();
+        idNumString = scan.nextLine();
+        if (idNumString.equalsIgnoreCase("abandon"))
+        {
+            return;
+        }
+        else
+        {
+            idNum = Integer.parseInt(idNumString);
+        }
+
         do
         {
             System.out.print("Enter your contribution amount: ----> ");
-            contributionAmount = scan.nextBigDecimal();
-            if (contributionAmount.intValue() > 200)
+            contributionAmountString = scan.nextLine();
+            if (contributionAmountString.equalsIgnoreCase("abandon"))
             {
-                System.out.println("Amount must be less than 200.");
+                return;
+            }
+            else
+            {
+                contributionAmount = new BigDecimal(contributionAmountString);
             }
 
-        }while (!(contributionAmount.intValue() <= 200));
+            if (contributionAmount.intValue() > 200)
+            {
+                System.out.println("Amount must be between 10 and 200.");
+            }
+
+        }while ((contributionAmount.intValue() > 200) || (contributionAmount.intValue() < 10));
 
         Employee employee = employees.put(idNum,new Employee(name,idNum,contributionAmount));
 
         int contributionTotal = 0;
         int contributionRemaining = 100;
+
+
 
         do
         {
@@ -75,12 +127,30 @@ public class AllocationTool
             printFunds();
             System.out.println();
             System.out.print("Which fund would you like to contribute to?  ");
-            choice = scan.nextInt();
+            choice = scan.nextLine();
+            int selection;
+            if (choice.equalsIgnoreCase("Abandon"))
+            {
+                return;
+            }
+            else
+            {
+                selection = Integer.parseInt(choice);
+            }
             System.out.println();
             System.out.println();
             System.out.println("You have " + contributionRemaining + " percent left to allocate.");
-            System.out.print("What percent would you like to contribute to " + funds.get(choice-1).getName() + "?  ");
-            int contributionPercent = scan.nextInt();
+            System.out.print("What percent would you like to contribute to " + funds.get(selection-1).getName() + "?  ");
+            String contributionInput = scan.nextLine();
+            int contributionPercent;
+            if (contributionInput.equalsIgnoreCase("Abandon"))
+            {
+                return;
+            }
+            else
+            {
+                contributionPercent = Integer.parseInt(contributionInput);
+            }
             System.out.println();
 
             if (contributionPercent > contributionRemaining)
@@ -90,14 +160,15 @@ public class AllocationTool
             }
             else
             {
-                if (funds.get(choice-1).hasEmployee(idNum))
+                if (funds.get(selection-1).hasEmployee(idNum))
                 {
-                    funds.get(choice-1).addContributionToEmployee(idNum,contributionPercent);
+                    funds.get(selection-1).addContributionToEmployee(idNum,contributionPercent);
+                    employee.updateEmployerContribution(funds.get(selection-1),contributionPercent);
                 }
                 else
                 {
-                    employees.get(idNum).addToFunds(funds.get(choice-1));
-                    funds.get(choice-1).addEmployeeContribution(idNum,contributionPercent);
+                    funds.get(selection-1).addEmployeeContribution(idNum,contributionPercent);
+                    employees.get(idNum).addToFunds(funds.get(selection-1));
                 }
                 contributionTotal += contributionPercent;
                 contributionRemaining -= contributionPercent;
@@ -105,7 +176,15 @@ public class AllocationTool
 
         }while (contributionTotal != 100);
 
-        return employees.get(idNum);
+        System.out.print("Would you like to see a printout of your retirement allocations?  ");
+        choice = scan.nextLine();
+        System.out.println();
+        if (choice.equalsIgnoreCase("Y") || choice.equalsIgnoreCase("Yes"))
+        {
+            System.out.println();
+            employee.printEnrollment();
+            System.out.println();
+        }
     }
 
     private void printFunds()
