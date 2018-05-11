@@ -49,7 +49,7 @@ public class Employee
         for (Fund f : funds)
         {
             System.out.println(String.format("%-20s",f.getName()) + "\t\t\t" + f.getContributionPercent(idNum) + "\t\t\t\t" + amountPerPeriod(f)
-                                + "  \t\t\t\t" + employerAmountPerPeriod(f) + "  \t\t\t\t" + employerAmountPerPeriod(f).add(amountPerPeriod(f)));
+                                + "\t\t\t\t" + employerAmountPerPeriod(f) + "\t\t\t\t" + employerAmountPerPeriod(f).add(amountPerPeriod(f)));
         }
         System.out.println();
         System.out.println(String.format("%-45s","Total Contribution Per Pay Period: ") + contribution);
