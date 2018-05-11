@@ -27,6 +27,6 @@ public class EmployerContribution
 
     public BigDecimal getAmount()
     {
-        return amount;
+        return amount.setScale(2,BigDecimal.ROUND_HALF_DOWN);
     }
 }

@@ -114,7 +114,9 @@ public class AllocationTool
 
         }while ((contributionAmount.intValue() > 200) || (contributionAmount.intValue() < 10));
 
-        Employee employee = employees.put(idNum,new Employee(name,idNum,contributionAmount));
+        Employee employee = new Employee(name,idNum,contributionAmount);
+
+        employees.put(idNum,employee);
 
         int contributionTotal = 0;
         int contributionRemaining = 100;
