@@ -10,7 +10,8 @@ public class Employee
     private int idNum;
     private BigDecimal contribution;
     private List<Fund> funds = new ArrayList<>();
-    EmployerContribution employerContribution;
+    private EmployerContribution employerContribution;
+    private long timeTakenToEnroll;
 
     public Employee(String name, int idNum, BigDecimal contribution)
     {
@@ -56,7 +57,7 @@ public class Employee
         System.out.println(String.format("%-45s","Total Employer Contribution Per Pay Period: ") + employerContribution.getAmount());
     }
 
-    private BigDecimal amountPerPeriod(Fund fund)
+    public BigDecimal amountPerPeriod(Fund fund)
     {
         BigDecimal percent = BigDecimal.valueOf(fund.getContributionPercent(idNum));
 
@@ -68,5 +69,25 @@ public class Employee
         BigDecimal percent = BigDecimal.valueOf(employerContribution.getContributionPercent(fund));
 
         return employerContribution.getAmount().multiply(percent.movePointLeft(2)).setScale(2,BigDecimal.ROUND_HALF_DOWN);
+    }
+
+    public long getTimeTakenToEnroll()
+    {
+        return timeTakenToEnroll;
+    }
+
+    public void setTimeTakenToEnroll(long timeTakenToEnroll)
+    {
+        this.timeTakenToEnroll = timeTakenToEnroll;
+    }
+
+    public int getIdNum()
+    {
+        return idNum;
+    }
+
+    public String toString()
+    {
+        return name;
     }
 }

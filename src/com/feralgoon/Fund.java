@@ -1,22 +1,28 @@
 package com.feralgoon;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Fund
 {
     private String name;
-    private Map<Integer, Integer> employeesContributing;
+    private Map<Integer, Integer> employeeContributionPercent;
+    private Map<Integer, Employee> employeesInFund;
+
 
     public Fund(String name)
     {
         this.name = name;
-        employeesContributing = new HashMap<>();
+        employeeContributionPercent = new HashMap<>();
+        employeesInFund = new HashMap<>();
     }
 
-    public void addEmployeeContribution(int empId,int amount)
+    public void addEmployeeContribution(int empId,int amount,Employee employee)
     {
-        employeesContributing.put(empId,amount);
+        employeeContributionPercent.put(empId,amount);
+        employeesInFund.put(empId, employee);
     }
 
     public String getName()
@@ -26,22 +32,39 @@ public class Fund
 
     public int getContributionPercent(int idNum)
     {
-        return employeesContributing.get(idNum);
+        return employeeContributionPercent.get(idNum);
     }
 
     public void addContributionToEmployee(int idNum, int amount)
     {
-        employeesContributing.put(idNum,employeesContributing.get(idNum) + amount);
+        employeeContributionPercent.put(idNum, employeeContributionPercent.get(idNum) + amount);
     }
 
     public boolean hasEmployee(int idNum)
     {
         boolean result = false;
 
-        if (employeesContributing.containsKey(idNum))
+        if (employeeContributionPercent.containsKey(idNum))
         {
             result = true;
         }
         return result;
+    }
+
+    public BigDecimal getTotalInvested()
+    {
+        BigDecimal result = new BigDecimal("0.00");
+
+        for(int idNum : employeeContributionPercent.keySet())
+        {
+            result = result.add(employeesInFund.get(idNum).amountPerPeriod(this));
+        }
+
+        return result;
+    }
+
+    public int getNumberEnrolled()
+    {
+        return employeeContributionPercent.size();
     }
 }
